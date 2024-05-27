@@ -2,8 +2,18 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from geopy.geocoders import Nominatim
-pd.options.display.max_columns = 4
-pd.options.display.max_rows = 15
+
+
+def input_geolocation(list_of_cities, df, var):
+    df[var + ' latitude'] = np.nan
+    df[var + ' longitude'] = np.nan
+    for item in list_of_cities:
+        latitude = geolocator.geocode(item).latitude
+        longitude = geolocator.geocode(item).longitude
+        df[var + ' latitude'] = np.where(df[var] == item, latitude, df[var + ' latitude'])
+        df[var + ' longitude'] = np.where(df[var] == item, longitude, df[var + ' longitude'])
+    return df
+
 
 # Set the path to the main file
 main_file_path = Path(__file__).resolve().parent.parent
@@ -22,6 +32,7 @@ input_file.drop(columns=['Flight Details', 'From-To'], inplace=True)
 input_file['Date'] = pd.to_datetime(input_file['Date']).dt.strftime('%d/%m/%Y')
 input_file['Price'] = input_file['Price'].astype(float).apply(lambda x: '{:,.2f}'.format(x))
 input_file['Flow Card?'] = input_file['Flow Card?'].replace({1: 'Yes', 0: 'No'})
+
 # reorder the columns
 input_file = input_file[['Date', 'Flight Number', 'From', 'To', 'Class', 'Price', 'Flow Card?', 'Bags Checked',
                          'Meal Type']]
@@ -30,19 +41,6 @@ input_file = input_file[['Date', 'Flight Number', 'From', 'To', 'Class', 'Price'
 # initiate geo locator app
 geolocator = Nominatim(user_agent="MyApp")
 cities = input_file["From"].unique()
-
-
-def input_geolocation(list_of_cities, df, var):
-    df[var + ' latitude'] = np.nan
-    df[var + ' longitude'] = np.nan
-    for item in list_of_cities:
-        latitude = geolocator.geocode(item).latitude
-        longitude = geolocator.geocode(item).longitude
-        df[var + ' latitude'] = np.where(df[var] == item, latitude, df[var + ' latitude'])
-        df[var + ' longitude'] = np.where(df[var] == item, longitude, df[var + ' longitude'])
-    return df
-
-
 input_file = input_geolocation(cities, input_file, 'From')
 input_file = input_geolocation(cities, input_file, 'To')
 
