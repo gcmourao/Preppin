@@ -2,8 +2,10 @@ import pandas as pd
 from pathlib import Path
 import numpy as np
 from geopy.geocoders import Nominatim
+pd.options.display.max_columns = 4
+pd.options.display.max_rows = 15
 
-geolocator = Nominatim(user_agent="MyApp")
+# Set the path to the main file
 main_file_path = Path(__file__).resolve().parent.parent
 
 # Read the data from the challenge file
@@ -11,32 +13,33 @@ input_file_path = main_file_path / 'input_files/PD 2024 Wk 1 Input.csv'
 input_file = pd.read_csv(input_file_path)
 
 # Break 'Flight details' into columns
-input_file[['Date', 'Flight Number', 'From-To', 'Class', 'Price']] = input_file['Flight Details'].str.split('//',
-                                                                                                            expand=True)
+input_file[['Date', 'Flight Number', 'From-To', 'Class', 'Price']] = (input_file['Flight Details'].
+                                                                      str.split('//', expand=True))
 input_file[['From', 'To']] = input_file['From-To'].str.split('-', expand=True)
 input_file.drop(columns=['Flight Details', 'From-To'], inplace=True)
 
 # adjust date, price format and Flow card
 input_file['Date'] = pd.to_datetime(input_file['Date']).dt.strftime('%d/%m/%Y')
 input_file['Price'] = input_file['Price'].astype(float).apply(lambda x: '{:,.2f}'.format(x))
-input_file['Flow Card?'] = input_file['Flow Card?'].apply(lambda x: 'Yes' if x == 1 else 'No')
-
+input_file['Flow Card?'] = input_file['Flow Card?'].replace({1: 'Yes', 0: 'No'})
 # reorder the columns
 input_file = input_file[['Date', 'Flight Number', 'From', 'To', 'Class', 'Price', 'Flow Card?', 'Bags Checked',
                          'Meal Type']]
 
 # Extra step for visualization in tableau
+# initiate geo locator app
+geolocator = Nominatim(user_agent="MyApp")
 cities = input_file["From"].unique()
 
 
-def input_geolocation(list_of_cities, df, input):
-    df[input + ' latitude'] = [None] * df.shape[0]
-    df[input + ' longitude'] = [None] * df.shape[0]
+def input_geolocation(list_of_cities, df, var):
+    df[var + ' latitude'] = np.nan
+    df[var + ' longitude'] = np.nan
     for item in list_of_cities:
         latitude = geolocator.geocode(item).latitude
         longitude = geolocator.geocode(item).longitude
-        df[input + ' latitude'] = np.where(df[input] == item, latitude, df[input + ' latitude'])
-        df[input + ' longitude'] = np.where(df[input] == item, longitude, df[input + ' longitude'])
+        df[var + ' latitude'] = np.where(df[var] == item, latitude, df[var + ' latitude'])
+        df[var + ' longitude'] = np.where(df[var] == item, longitude, df[var + ' longitude'])
     return df
 
 
