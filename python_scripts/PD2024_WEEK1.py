@@ -1,26 +1,10 @@
 import pandas as pd
-from pathlib import Path
-import numpy as np
-from geopy.geocoders import Nominatim
+import _read_save_files as rsf
+import _geolocation as geo
 
-
-def input_geolocation(list_of_cities, df, var):
-    df[var + ' latitude'] = np.nan
-    df[var + ' longitude'] = np.nan
-    for item in list_of_cities:
-        latitude = geolocator.geocode(item).latitude
-        longitude = geolocator.geocode(item).longitude
-        df[var + ' latitude'] = np.where(df[var] == item, latitude, df[var + ' latitude'])
-        df[var + ' longitude'] = np.where(df[var] == item, longitude, df[var + ' longitude'])
-    return df
-
-
-# Set the path to the main file
-main_file_path = Path(__file__).resolve().parent.parent
 
 # Read the data from the challenge file
-input_file_path = main_file_path / 'input_files/PD 2024 Wk 1 Input.csv'
-input_file = pd.read_csv(input_file_path)
+input_file = pd.read_csv(rsf.get_file_path('input_files/', 'PD 2024 Wk 1 Input.csv'))
 
 # Break 'Flight details' into columns
 input_file[['Date', 'Flight Number', 'From-To', 'Class', 'Price']] = (input_file['Flight Details'].
@@ -38,22 +22,20 @@ input_file = input_file[['Date', 'Flight Number', 'From', 'To', 'Class', 'Price'
                          'Meal Type']]
 
 # Extra step for visualization in tableau
-# initiate geo locator app
-geolocator = Nominatim(user_agent="MyApp")
 cities = input_file["From"].unique()
-input_file = input_geolocation(cities, input_file, 'From')
-input_file = input_geolocation(cities, input_file, 'To')
+input_file = geo.input_geolocation(cities, input_file, 'From')
+input_file = geo.input_geolocation(cities, input_file, 'To')
 
 # Creating output files
 output_has_flow_card = input_file[input_file['Flow Card?'] == 'Yes']
 output_no_flow_card = input_file[input_file['Flow Card?'] == 'No']
 
 # Check files. Note that it will have 4 extra columns when compared to the official challenge answer
-print(output_has_flow_card.T)
+print(output_has_flow_card.head(4).T)
 print(output_has_flow_card.shape)
-print(output_no_flow_card.T)
+print(output_no_flow_card.head(4).T)
 print(output_no_flow_card.shape)
 
 # Save files
-output_has_flow_card.to_csv(main_file_path / 'output_files/P2024Week1_withFlowCard.csv', index=False)
-output_no_flow_card.to_csv(main_file_path / 'output_files/P2024Week1_withoutFlowCard.csv', index=False)
+output_has_flow_card.to_csv(rsf.get_file_path('output_files/', 'P2024Week1_withFlowCard.csv'), index=False)
+output_no_flow_card.to_csv(rsf.get_file_path('output_files/', 'P2024Week1_withoutFlowCard.csv'), index=False)

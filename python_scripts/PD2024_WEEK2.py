@@ -1,5 +1,5 @@
 import pandas as pd
-from pathlib import Path
+import _read_save_files as rsf
 
 
 def get_stats(group):
@@ -12,13 +12,9 @@ def transpose_df(df, column_name):
     return new_df
 
 
-# Set the path to the main file
-main_file_path = Path(__file__).resolve().parent.parent
-input_file_path = main_file_path / 'output_files/'
-
 # the input files from week 2 are the output files from week 1
-input_file_with_card = pd.read_csv(input_file_path / 'P2024Week1_withFlowCard.csv')
-input_file_without_card = pd.read_csv(input_file_path / 'P2024Week1_withoutFlowCard.csv')
+input_file_with_card = pd.read_csv(rsf.get_file_path('output_files/', 'P2024Week1_withFlowCard.csv'))
+input_file_without_card = pd.read_csv(rsf.get_file_path('output_files/', 'P2024Week1_withoutFlowCard.csv'))
 
 # Concatenate the files
 input_file_full = pd.concat([input_file_with_card, input_file_without_card], ignore_index=True)
@@ -51,4 +47,4 @@ print(final_df.head(5).T)
 print(final_df.shape)
 
 # Save files
-final_df.to_csv(main_file_path / 'output_files/P2024Week2.csv', index=False)
+final_df.to_csv(rsf.get_file_path('output_files/', 'P2024Week2.csv'), index=False)
