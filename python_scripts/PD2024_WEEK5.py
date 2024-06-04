@@ -44,6 +44,6 @@ print(f"Third output (yet_to_book) shape: {yet_to_book.shape}")
 
 # Save files
 with pd.ExcelWriter(rsf.get_file_path('output_files/', 'P2024Week5.xlsx')) as writer:
-    booked_flights.to_excel(writer, sheet_name='2024 Booked Flights')
-    not_booked_flights.to_excel(writer, sheet_name='Unbooked Flights')
-    yet_to_book.to_excel(writer, sheet_name='Customers Yet to Book in 2024')
+    booked_flights.to_excel(writer, sheet_name='2024 Booked Flights', index=False)
+    not_booked_flights.to_excel(writer, sheet_name='Unbooked Flights', index=False)
+    yet_to_book.to_excel(writer, sheet_name='Customers Yet to Book in 2024', index=False)
