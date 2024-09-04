@@ -1,6 +1,7 @@
 import pandas as pd
-import _read_save_files as rsf
+from Preppin.meta import read_save_files as rsf
 import numpy as np
+from Preppin.Evaluate.Verify import CompareSolutions
 
 # Import files
 flights_2024 = pd.read_csv(rsf.get_file_path('input_files/', 'PD 2024 Wk5 Prep Air 2024 Flights.csv'))
@@ -34,12 +35,34 @@ yet_to_book['Last Date Flown'] = pd.to_datetime(yet_to_book['Last Date Flown'])
 yet_to_book['Today'] = pd.to_datetime('2024-01-31')
 yet_to_book['Days Since last Flown'] = (yet_to_book['Today'] - yet_to_book['Last Date Flown']).dt.days
 yet_to_book.drop(columns=['Today'], inplace=True)
-yet_to_book['Customer Category'] = np.where(yet_to_book['Days Since last Flown'] < 90, 'Recent Flyer',
-                                            np.where(yet_to_book['Days Since last Flown'] < 180, 'Taking a break',
-                                                     np.where(yet_to_book['Days Since last Flown'] < 270,
-                                                              'Been away a while',
-                                                              'Lapsed Customers')))
+yet_to_book['Customer Category'] = np.where(yet_to_book['Days Since last Flown'] <= 90,
+                                            'Recent Fliers (less than 3 months since last flight)',
+                                            np.where(yet_to_book['Days Since last Flown'] <= 180,
+                                                     'Taking a break (3-6 months since last flight)',
+                                                     np.where(yet_to_book['Days Since last Flown'] <= 270,
+                                                              'Been away a while (6-9 months since last flight)',
+                                                              'Lapsed (over 9 months since last flight)')))
 print(f"Third output (yet_to_book) shape: {yet_to_book.shape}")
+
+
+# Check solution first solution
+print("FIRST COMPARISON OUTPUT:")
+official_file_name = rsf.get_file_path('official_file_solution/', 'Prep Air Output.xlsx')
+booked_flights_official_df = pd.read_excel(official_file_name, sheet_name='2024 Booked Flights')
+my_comp1 = CompareSolutions(booked_flights, booked_flights_official_df, ['Date', 'Flight Number', 'Customer ID'])
+my_comp1.execute_comparison()
+
+# Check solution second solution
+print("SECOND COMPARISON OUTPUT:")
+unbooked_flights_official_df = pd.read_excel(official_file_name, sheet_name='Unbooked Flights')
+my_comp2 = CompareSolutions(not_booked_flights, unbooked_flights_official_df, ['Date', 'Flight Number'])
+my_comp2.execute_comparison()
+
+# Check solution second solution
+print("THIRD COMPARISON OUTPUT:")
+customers_yet_to_book_df = pd.read_excel(official_file_name, sheet_name='Customers Yet to Book in 2024')
+my_comp3 = CompareSolutions(yet_to_book, customers_yet_to_book_df, ['Customer ID'])
+my_comp3.execute_comparison()
 
 
 # Save files
