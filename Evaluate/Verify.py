@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from pandas._libs.tslibs.parsing import DateParseError
 from datacompy import Compare
 
 
@@ -24,21 +23,11 @@ class CompareSolutions:
     def adjust_date(self):
         for df in [self.official_solution, self.my_solution]:
             for col in df.columns[df.dtypes == 'object']:
-                try:
-                    new_dt = pd.to_datetime(df[col], format='%d/%m/%Y').dt.strftime('%d/%m/%Y').to_list()
-                    df.loc[col] = new_dt
-                except:
+                for date_format in ['%d/%m/%Y', '%Y-%m-%d']:
                     try:
-                        new_dt = pd.to_datetime(df[col], format='%Y-%m-%d').dt.strftime('%Y-%m-%d').to_list()
-                        df.loc[col] = new_dt
-                    except:
-                        try:
-                            df[col] = pd.to_datetime(df[col], format='%d/%m/%Y')
-                        except:
-                            try:
-                                df[col] = pd.to_datetime(df[col], format='%Y-%m-%d')
-                            except:
-                                pass
+                        df[col] = pd.to_datetime(df[col], format=date_format)
+                    except (ValueError, TypeError):
+                        pass
 
     def compare_files(self):
         compare = Compare(

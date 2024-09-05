@@ -55,7 +55,7 @@ official_df = pd.read_csv(rsf.get_file_path('official_file_solution/', 'PD 2024 
 my_df = final_df.drop(columns=['Aggregation type'])
 my_comp = CompareSolutions(official_df, final_df, ['Flow Card?','Quarter'])
 my_comp.execute_comparison()
-# The aggregation type is missing from official solution. So comparison cannot be done 100% correctly.
+# The aggregation type is missing from official solution. So cannot merge the files correctly.
 
 
 # Save files
