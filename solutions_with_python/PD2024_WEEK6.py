@@ -13,41 +13,47 @@ def create_salary_band(input_df, total_salary_col_name):
     return input_df
 
 
+def calculate_remaining_salary_to_tax(input_df, salary_column_name, cap):
+    input_df["remaining_salary"] = np.where(input_df[salary_column_name] > cap, input_df[salary_column_name] - cap, 0)
+    return input_df
+
+
+def define_salary_to_tax_by_cap(input_df, salary_column_name, cap_start, cap_end):
+    input_df = calculate_remaining_salary_to_tax(input_df, salary_column_name, cap_start)
+    if cap_end in (np.inf, np.NAN):
+        input_df["taxable_salary"] = np.where(input_df[salary_column_name] > cap_start,
+                                              input_df["remaining_salary"], 0)
+    else:
+        input_df["taxable_salary"] = np.where(input_df[salary_column_name] > cap_end, (cap_end - cap_start),
+                                              input_df["remaining_salary"])
+    return input_df
+
+
 # Import files
-input_df = pd.read_csv(rsf.get_file_path('input_files/', 'PD 2024 Wk 6 Input.csv'))
-print(f"Salary report input df: {input_df.shape}")
-input_df['row_number'] = list(range(1, input_df.shape[0] + 1, 1))
-input_df.sort_values(['StaffID', 'row_number'], inplace=True)
-input_df.drop_duplicates(['StaffID'], keep='last', inplace=True)
-input_df.drop(columns=['row_number'], inplace=True)
-input_df_T = pd.melt(input_df, id_vars=['StaffID'])
-input_df_T.rename(columns={'variable': 'Month', 'value': 'Salary'}, inplace=True)
-input_df_T['Month'] = input_df_T['Month'].astype(np.int64)
-input_df_T.sort_values(['StaffID', 'Month'], inplace=True)
-salary_report = input_df_T.groupby('StaffID', as_index=False)['Salary'].agg('sum')
+input_salaries = pd.read_csv(rsf.get_file_path('input_files/', 'PD 2024 Wk 6 Input.csv'))
+print(f"Salary report input df: {input_salaries.shape}")
+
+# Adjust salary
+input_salaries['row_number'] = list(range(1, input_salaries.shape[0] + 1, 1))
+input_salaries.sort_values(['StaffID', 'row_number'], inplace=True)
+input_salaries.drop_duplicates(['StaffID'], keep='last', inplace=True)
+input_salaries.drop(columns=['row_number'], inplace=True)
+input_salaries_T = pd.melt(input_salaries, id_vars=['StaffID'])
+input_salaries_T.rename(columns={'variable': 'Month', 'value': 'Salary'}, inplace=True)
+input_salaries_T['Month'] = input_salaries_T['Month'].astype(np.int64)
+input_salaries_T.sort_values(['StaffID', 'Month'], inplace=True)
+
+# Calculate yearly salary
+salary_report = input_salaries_T.groupby('StaffID', as_index=False)['Salary'].agg('sum')
 salary_report = create_salary_band(salary_report, 'Salary')
 
-# create tax calculation
-salary_report['20% rate tax paid'] = 0
-salary_report['40% rate tax paid'] = 0
-salary_report['45% rate tax paid'] = 0
-salary_report["remaining salary"] = salary_report['Salary'] - 12570
-salary_report["20% rate tax paid"] = np.where((salary_report['remaining salary'] > 0) &
-                                              (salary_report['remaining salary'] <= (50270 - 12570)),
-                                              salary_report['remaining salary'] * 0.2, (50270 - 12570) * 0.2)
-salary_report["remaining salary"] = salary_report['Salary'] - 50270
-salary_report["40% rate tax paid"] = np.where(salary_report['remaining salary'] < 0, 0,
-                                              np.where(salary_report['remaining salary'] <= (125140 - 50270),
-                                                       salary_report['remaining salary'] * 0.4,
-                                                       (125140 - 50270) * 0.4))
-
-salary_report["remaining salary"] = salary_report['Salary'] - 125140
-salary_report["45% rate tax paid"] = np.where(salary_report['remaining salary'] > 0,
-                                              salary_report['remaining salary'] * 0.45, 0)
-
-salary_report['Total Tax Paid'] = (salary_report['20% rate tax paid'] + salary_report['40% rate tax paid']
-                                   + salary_report['45% rate tax paid'])
-salary_report.drop(columns=['remaining salary'], inplace=True)
+# Calculate tax paid
+salary_report['20% rate tax paid'] = define_salary_to_tax_by_cap(salary_report, 'Salary',
+                                                                 12570, 50270)["taxable_salary"] * 0.2
+salary_report['40% rate tax paid'] = define_salary_to_tax_by_cap(salary_report, 'Salary',
+                                                                 50270, 125140)["taxable_salary"] * 0.4
+salary_report['45% rate tax paid'] = define_salary_to_tax_by_cap(salary_report, 'Salary',
+                                                                 125140, np.inf)["taxable_salary"] * 0.45
 
 # import official solution
 official_solution = pd.read_csv(rsf.get_file_path('official_file_solution/', 'PD 2024 Wk 6 Output.csv'))
