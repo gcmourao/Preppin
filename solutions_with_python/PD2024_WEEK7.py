@@ -7,10 +7,10 @@ import inflect
 p = inflect.engine()
 
 
-def check_first_valentine(relationship_start, valentine_day):
+def check_first_valentine(relationship_start, valentine_date):
     valentine_in_first_year_flag = []
     for start_date in relationship_start:
-        first_valentine = datetime(start_date.year, valentine_day.month, valentine_day.day)
+        first_valentine = datetime(start_date.year, valentine_date.month, valentine_date.day)
         if start_date > first_valentine:
             valentine_in_first_year_flag.append("No")
         else:
