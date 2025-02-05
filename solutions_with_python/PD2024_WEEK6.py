@@ -30,7 +30,7 @@ def define_salary_to_tax_by_cap(input_df, salary_column_name, cap_start, cap_end
 
 
 # Import files
-input_salaries = pd.read_csv(rsf.get_file_path('input_files/', 'PD 2024 Wk 6 Input.csv'))
+input_salaries = pd.read_csv(rsf.get_file_path('input_files/', 'PD 2024 Wk6 Input.csv'))
 print(f"Salary report input df: {input_salaries.shape}")
 
 # Adjust salary

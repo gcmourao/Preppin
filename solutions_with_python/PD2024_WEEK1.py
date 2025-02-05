@@ -5,7 +5,7 @@ from Preppin.Evaluate.Verify import CompareSolutions
 
 
 # Read the data from the challenge file
-input_file = pd.read_csv(rsf.get_file_path('input_files/', 'PD 2024 Wk 1 Input.csv'))
+input_file = pd.read_csv(rsf.get_file_path('input_files/', 'PD 2024 Wk1 Input.csv'))
 
 
 # Break 'Flight details' into columns

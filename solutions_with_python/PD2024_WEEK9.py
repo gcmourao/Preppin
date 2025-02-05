@@ -27,8 +27,6 @@ last_action_df.sort_values(by=['Flight Number', 'Flight Date', 'Class', 'Date'],
 last_action_df['Total Seats booked over time'] = last_action_df.groupby(['Flight Number',
                                                                          'Flight Date', 'Class']).cumcount() + 1
 
-# print(last_action_df[['Flight Number', 'Flight Date', 'Class', 'Total Seats booked over time']].head(100))
-
 # Merge with flight information
 last_action_df = pd.merge(last_action_df, flight_data_df, how='outer', on=['Flight Number', 'Flight Date', 'Class'])
 last_action_df['Total Seats booked over time'].fillna(0, inplace=True)
@@ -36,13 +34,15 @@ last_action_df['Total Seats booked over time'].fillna(0, inplace=True)
 # Calculate capacity
 last_action_df['Capacity %'] = last_action_df['Total Seats booked over time'] / last_action_df['Capacity']
 
-# ****Check output*****
+# ------Check output-----
 # import official solution
 official_solution = pd.read_csv(rsf.get_file_path('official_file_solution/', 'PD 2024 Wk 9 Output.csv'))
 
 # compare results
 my_comp = CompareSolutions(last_action_df, official_solution, ['Flight Number', 'Flight Date', 'Class', 'Customer ID'])
 my_comp.execute_comparison()
+
+# -----------------------
 
 # Save files
 last_action_df.to_csv(rsf.get_file_path('output_files/', 'P2024Week9.csv'), index=False)
