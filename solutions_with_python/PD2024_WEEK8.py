@@ -151,6 +151,7 @@ final_df = final_benefit_cost.groupby(by='scheme_tier',
                                                            'total_cost': 'sum'})
 final_df['total_cost'] = round(final_df['total_cost'], 2)
 
+
 # Print solution
 scheme5 = ['5 Tier 0', '5 Tier 1', '5 Tier 2', '5 Tier 3', '5 Tier 4', '5 Tier 5', '5 Tier 6']
 scheme10 = ['10 Tier 0', '10 Tier 1', '10 Tier 2', '10 Tier 3']

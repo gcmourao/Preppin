@@ -2,6 +2,7 @@ import pandas as pd
 from Preppin.meta import read_save_files as rsf
 from Preppin.Evaluate.Verify import CompareSolutions
 
+
 # Import files
 input_file_with_card = pd.read_csv(rsf.get_file_path('output_files/', 'P2024Week1_withFlowCard.csv'))
 input_file_without_card = pd.read_csv(rsf.get_file_path('output_files/', 'P2024Week1_withoutFlowCard.csv'))

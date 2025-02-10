@@ -3,7 +3,6 @@ from Preppin.meta import read_save_files as rsf
 from datetime import datetime
 import numpy as np
 import inflect
-
 p = inflect.engine()
 
 
@@ -25,6 +24,7 @@ couple_df = pd.read_excel(rsf.get_file_path('input_files/',
 gifts_df = pd.read_excel(rsf.get_file_path('input_files/',
                                            "PD 2024 Wk7 Valentine's Preppin' Data.xlsx"),
                          sheet_name='Gifts')
+
 
 # prepare couple_df
 couple_df['Relationship Start'] = pd.to_datetime(couple_df['Relationship Start'], format='%B %d, %Y')
