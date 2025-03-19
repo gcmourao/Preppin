@@ -22,7 +22,3 @@ for i in range(len(days_list)):
 # Checking my results:
 print(f"Number of months in the new calendar: {month_calc+1}")
 print(f"Last two days of the year in the new calendar: {new_days_list[-2:]}")
-
-
-
-#
