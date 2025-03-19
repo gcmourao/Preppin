@@ -15,11 +15,13 @@ for i in range(len(days_list)):
     if day_calc == 28:
         month_calc += 1
 
-# Check answer:
+# The expected answer from the challenge is:
+# - The new calendar should have 14 months
+# - The last month of this new calendar should have 2 days only:
+
+# Checking my results:
 print(f"Number of months in the new calendar: {month_calc+1}")
 print(f"Last two days of the year in the new calendar: {new_days_list[-2:]}")
-
-
 
 
 
