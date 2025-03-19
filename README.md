@@ -19,6 +19,7 @@ Besides solving the data preparation challenges, for some of them I also created
 visualization using Tableau. You can find the link to them below:
 
 <figure>
-  <a href="https://public.tableau.com/app/profile/gabriela.mourao/viz/PreppinData2024week1/PCAirlinesFlightRoutes"><img src="https://public.tableau.com/thumb/views/PreppinData2024week1/PCAirlinesFlightRoutes" width ="50%" alt="my alt text"/></a><br/>
-  <figcaption><em>Week 1</em></figcaption>
-</figure>
+  https://public.tableau.com/views/40YearsofTorturePreventionAComprehensiveOverview/Overview?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link
+  <a href="https://public.tableau.com/views/40YearsofTorturePreventionAComprehensiveOverview/Overview?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" width ="50%" alt="my alt text"/</a>
+  <br/>
+  <figcaption><em>Week 1</em></figcaption></figure>
